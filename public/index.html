@@ -5,6 +5,7 @@
     <title ng-bind="ctrl.title">Socket Chat</title>
 
     <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="stylesheets/style.css" />
 
     <script src="components/angular/angular.js"></script>
     <script src="components/angular-route/angular-route.js"></script>
@@ -19,8 +20,9 @@
 <body>
 <div class="container">
     <h3>{{ctrl.title}}</h3>
-    <p>test</p>
+    <ng-view>
 
+    </ng-view>
 </div>
 </body>
 </html>

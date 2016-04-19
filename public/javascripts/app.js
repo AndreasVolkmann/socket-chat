@@ -1,7 +1,7 @@
 angular.module('app', ['ngRoute']).config(['$routeProvider', function ($routeProvider) {
     $routeProvider
         .when('/', {
-            templateUrl: '',
+            templateUrl: 'views/Main.html',
             controller: 'Main as ctrl'
         })
         .otherwise({
