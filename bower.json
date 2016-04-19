@@ -1,0 +1,23 @@
+{
+  "name": "socket-chat",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "goreRatzete <avolkmann@icloud.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/goreRatzete/socket-chat",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.5",
+    "angular-route": "^1.5.5",
+    "bootstrap": "^3.3.6"
+  }
+}
