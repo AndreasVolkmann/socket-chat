@@ -9,3 +9,9 @@ angular.module('app', ['ngRoute']).config(['$routeProvider', function ($routePro
         });
 }]);
 
+
+function go(destination, argument) {
+    var path = '#/' + destination + '/' + argument;
+    console.log('Go to: ' + path);
+    window.location.href = path;
+}
