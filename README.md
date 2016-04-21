@@ -6,5 +6,5 @@ Install project dependencies:
 * `bower install`
 
 ### Run
-Type: `npm start`
+Type: `gulp run`
 

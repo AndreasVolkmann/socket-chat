@@ -3,9 +3,13 @@
         <textarea rows="20" cols="100" ng-model="ctrl.log"></textarea>
     </div>
     <div class="col-lg-6">
-        <h4>Username: {{ctrl.username}}</h4>
+        <h4>Username: {{ctrl.user.name}}</h4>
+        <ul>
+            <li ng-repeat="user in ctrl.users">{{user.name}}</li>
+        </ul>
     </div>
-    <form action="">
+
+    <form>
         <input ng-model="ctrl.input" id="m" autocomplete="off"/>
         <button ng-click="ctrl.send(ctrl.input)" ng-trim="false">Send</button>
     </form>
