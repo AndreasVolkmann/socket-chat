@@ -23,21 +23,23 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
 
     // Socket //
     Socket.on('message', function (message) {
-        console.log('Got message: ' + message);
+        console.log('Got message: ' + message.message);
         $scope.$apply(function () {
-            self.log += '\n' + message;
+            //message.ct = message.ct.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            self.log += '\n' + message.ct + ' ' + message.author + ': ' + message.message;
             self.messages.push(message);
         });
     });
     
     Socket.on('auth', function (user) {
-        console.log(user);
+        console.log('Auth: ' + user);
         $scope.$apply(function () {
             self.user = user;
         });
     });
     
     Socket.on('users', function (users) {
+        console.log('Got users! ' + users.length);
         $scope.$apply(function () {
             self.users = users;
         });
@@ -50,7 +52,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
         });
     });
 
-    Socket.on('disconnect', function (removed) {
+    Socket.on('user disconnect', function (removed) {
         $scope.$apply(function () {
             self.users.forEach(function (user) {
                 if (user.id === removed.id) {

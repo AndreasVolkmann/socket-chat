@@ -1,6 +1,6 @@
 angular.module('app').factory('Socket', function () {
     var socket = io.connect();
-    socket.on('connect', function (data) {
+    socket.on('connect', function () {
         console.log('Socket connected! ' + socket.id);
     });
     
