@@ -19,7 +19,6 @@ module.exports = function (io, socket) {
             message: message,
             author: user.name
         });
-        msg.date = msg.ct.toISOString().replace(/T/, ' ').replace(/\..+/, '');
         socket.broadcast.emit('message', msg);
     });
 
@@ -27,6 +26,13 @@ module.exports = function (io, socket) {
         console.log(`Socket disconnected: ${socket.id}`);
         io.emit('user disconnect', user);
         UserController.removeUser(socket.id);
+    });
+    
+    socket.on('username', async(username) => {
+        user.name = username;
+        user = await Promise.resolve(UserController.updateUser(user));
+        console.log(user);
+        socket.broadcast.emit('user update', user);
     });
 };
 

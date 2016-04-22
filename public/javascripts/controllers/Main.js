@@ -1,33 +1,58 @@
-angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, $scope) {
+angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', function (Socket, $scope, $timeout) {
     var self = this;
 
     self.title = 'Socket Chat';
     self.messages = [];
     self.input = '';
-    self.log = '';
+    self.log = {
+        log: '',
+        append: function (message) {
+            var date;
+            var text;
+            if (message.date) {
+                date = message.date;
+                text = message.text;
+            } else {
+                date = getDate();
+                text = message;
+            }
+            this.log += '\n' + date + ' | ' + text;
+        }
+    };
     self.user = {
         name: ''
     };
+    self.name = '';
 
     self.send = function (message) {
-        if (message.length == 0) {
-            console.log('Message does not qualify: ' + message + '.');
-        } else {
-            self.messages.push(message);
-            self.log += '\n' + 'Me: ' + message;
+        if (message.length > 0) {
+            //self.messages.push(message);
+            self.log.append('Me: ' + message);
             console.log('Sent message: ' + message);
             Socket.emit('post message', message);
             self.input = '';
         }
     };
 
+    self.changeName = function () {
+        if (self.name.length > 0) {
+            Socket.emit('username', self.name);
+            self.user.name = self.name;
+            self.name = '';
+            updateUser(self.user);
+        }
+    };
+
     // Socket //
     Socket.on('message', function (message) {
-        console.log('Got message: ' + message.message);
+        console.log(message);
         $scope.$apply(function () {
-            //message.ct = message.ct.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-            self.log += '\n' + message.date + ' ' + message.author + ': ' + message.message;
-            self.messages.push(message);
+            var date = message.ct.replace(/T/, ' ').replace(/\..+/, '');
+
+            self.log.append({
+                text: message.author + ': ' + message.message,
+                date: date
+            });
         });
     });
 
@@ -49,7 +74,13 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
         console.log(user);
         $scope.$apply(function () {
             self.users.push(user);
-            self.log += '\n' + user.name + ' joined the room';
+            self.log.append(user.name + ' joined the room');
+        });
+    });
+
+    Socket.on('user update', function (user) {
+        $scope.$apply(function () {
+            updateUser(user);
         });
     });
 
@@ -61,8 +92,22 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
                     self.users.splice(index, 1);
                 }
             });
-            self.log += '\n' + removed.name + ' left the room';
+            self.log.append(removed.name + ' left the room');
         });
     });
 
+
+    function updateUser(user) {
+        self.users.forEach(function (item) {
+            if (item.id === user.id) {
+                if (item.name !== user.name) {
+                    self.log.append(item.name + ' changed his name to ' + user.name);
+                    item.name = user.name;
+                    item.ct = user.ct;
+                }
+            }
+        });
+    }
+
 }]);
+

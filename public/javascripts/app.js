@@ -14,3 +14,8 @@ function go(destination, argument) {
     console.log('Go to: ' + path);
     window.location.href = path;
 }
+
+
+function getDate() {
+    return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+}
