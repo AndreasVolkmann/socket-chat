@@ -31,7 +31,6 @@ module.exports = function (io, socket) {
     socket.on('username', async(username) => {
         user.name = username;
         user = await Promise.resolve(UserController.updateUser(user));
-        console.log(user);
         socket.broadcast.emit('user update', user);
     });
 };

@@ -60,6 +60,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
         console.log('Auth: ' + user);
         $scope.$apply(function () {
             self.user = user;
+            self.log.append('Welcome ' + user.name + '!');
         });
     });
 
@@ -101,7 +102,11 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
         self.users.forEach(function (item) {
             if (item.id === user.id) {
                 if (item.name !== user.name) {
-                    self.log.append(item.name + ' changed his name to ' + user.name);
+                    if (user.id === self.user.id) {
+                        self.log.append('You changed your name to: ' + user.name);
+                    } else {
+                        self.log.append(item.name + ' changed his name to: ' + user.name);
+                    }
                     item.name = user.name;
                     item.ct = user.ct;
                 }
