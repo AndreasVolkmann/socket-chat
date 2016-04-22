@@ -26,26 +26,27 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
         console.log('Got message: ' + message.message);
         $scope.$apply(function () {
             //message.ct = message.ct.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-            self.log += '\n' + message.ct + ' ' + message.author + ': ' + message.message;
+            self.log += '\n' + message.date + ' ' + message.author + ': ' + message.message;
             self.messages.push(message);
         });
     });
-    
+
     Socket.on('auth', function (user) {
         console.log('Auth: ' + user);
         $scope.$apply(function () {
             self.user = user;
         });
     });
-    
+
     Socket.on('users', function (users) {
         console.log('Got users! ' + users.length);
         $scope.$apply(function () {
             self.users = users;
         });
     });
-    
+
     Socket.on('user', function (user) {
+        console.log(user);
         $scope.$apply(function () {
             self.users.push(user);
             self.log += '\n' + user.name + ' joined the room';

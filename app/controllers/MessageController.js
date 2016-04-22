@@ -19,6 +19,7 @@ module.exports = function (io, socket) {
             message: message,
             author: user.name
         });
+        msg.date = msg.ct.toISOString().replace(/T/, ' ').replace(/\..+/, '');
         socket.broadcast.emit('message', msg);
     });
 
