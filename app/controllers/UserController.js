@@ -4,10 +4,12 @@ const User = require('../models/User');
 const users = [];
 let count = 0;
 
-function addUser(id) {
+async function addUser(id, username) {
+    let name = await assignName(username);
+    
     let user = new User({
         id: id,
-        name: 'User' + ++count
+        name: name
     });
     users.push(user);
 
@@ -40,6 +42,19 @@ async function updateUser(update) {
     });
 }
 
+async function assignName(username) {
+    if (username) {
+        // check for duplcate
+        await users.forEach((user) => {
+            if (user.name === username) {
+                return assignName(username + 1);
+            } 
+        });
+        return username;
+    } else {
+        return 'User' + ++count;
+    }
+}
 
 
 module.exports = {

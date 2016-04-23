@@ -1,4 +1,5 @@
-angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, $scope) {
+angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', function (Socket, $scope, $localStorage) {
+    $scope.$storage = $localStorage;
     var self = this;
 
     self.title = 'Socket Chat';
@@ -9,6 +10,8 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
     };
     self.name = '';
 
+    Socket.emit('auth', $scope.$storage.username);
+    
     self.send = function (message) {
         if (message.length > 0) {
             //self.messages.push(message);
@@ -25,6 +28,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
     self.changeName = function () {
         if (self.name.length > 0) {
             Socket.emit('username', self.name);
+            $scope.$storage.username = self.name;
             self.user.name = self.name;
             self.name = '';
             updateUser(self.user);
@@ -35,9 +39,9 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
     Socket.on('message', function (message) {
         console.log(message);
         $scope.$apply(function () {
-            var date = message.ct.replace(/T/, ' ').replace(/\..+/, '');
+            var date = message.date.replace(/T/, ' ').replace(/\..+/, '');
             append({
-                text: message.message,
+                text: message.text,
                 date: date,
                 author: message.author
             });
@@ -48,6 +52,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
         console.log('Auth: ' + user);
         $scope.$apply(function () {
             self.user = user;
+            //$scope.$storage.username = user.name;
             append('Welcome ' + user.name + '!');
         });
     });
@@ -91,6 +96,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
         });
         $scope.$apply(function () {
             self.messages = history;
+            append('Welcome to ' + self.title + '!');
         });
     });
 
@@ -101,13 +107,11 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
                 if (item.name !== user.name) {
                     if (user.id === self.user.id) {
                         append({
-                            text: 'You changed your name to: ' + user.name,
-                            author: ''
+                            text: 'You changed your name to: ' + user.name
                         });
                     } else {
                         append({
-                            text: item.name + ' changed his name to: ' + user.name,
-                            author: ''
+                            text: item.name + ' changed his name to: ' + user.name
                         });
                     }
                     item.name = user.name;

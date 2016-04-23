@@ -6,20 +6,25 @@ const UserController = require('./UserController');
 const history = [];
 
 module.exports = function (io, socket) {
+    let user;
 
 
-    let user = UserController.addUser(socket.id);
-    sendAuth(user, socket);
-    sendUsers(socket);
-    broadcastUser(user, socket);
-    sendHistory(socket);
-    
+    socket.on('auth', async(username) => {
+        console.log('Username: ' + username);
+        user = await UserController.addUser(socket.id, username);
+
+        sendAuth(user, socket);
+        sendUsers(socket);
+        broadcastUser(user, socket);
+        sendHistory(socket);
+    });
 
     socket.on('post message', (message) => {
         console.log(`${socket.id}: ${message}`);
         let msg = new Message({
             text: message,
-            author: user.name
+            author: user.name,
+            date: Date.now()
         });
         history.push(msg);
         socket.broadcast.emit('message', msg);
@@ -30,7 +35,7 @@ module.exports = function (io, socket) {
         io.emit('user disconnect', user);
         UserController.removeUser(socket.id);
     });
-    
+
     socket.on('username', async(username) => {
         user.name = username;
         user = await Promise.resolve(UserController.updateUser(user));

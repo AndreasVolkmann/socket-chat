@@ -1,4 +1,4 @@
-angular.module('app', ['ngRoute', 'luegg.directives']).config(['$routeProvider', function ($routeProvider) {
+angular.module('app', ['ngRoute', 'luegg.directives', 'ngStorage']).config(['$routeProvider', function ($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'views/Main.html'
