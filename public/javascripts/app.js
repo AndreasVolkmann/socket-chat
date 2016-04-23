@@ -1,4 +1,4 @@
-angular.module('app', ['ngRoute']).config(['$routeProvider', function ($routeProvider) {
+angular.module('app', ['ngRoute', 'luegg.directives']).config(['$routeProvider', function ($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'views/Main.html'
@@ -18,4 +18,8 @@ function go(destination, argument) {
 
 function getDate() {
     return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+}
+
+function formatDate(date) {
+    return date.replace(/T/, ' ').replace(/\..+/, '');
 }

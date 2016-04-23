@@ -5,13 +5,13 @@ const Schema = mongoose.Schema;
 
 
 const MessageSchema = new Schema({
-    message: {
+    text: {
         type: String
     },
     author: {
         type: String
     },
-    ct: {
+    date: {
         type: Date,
         default: Date.now()
     }

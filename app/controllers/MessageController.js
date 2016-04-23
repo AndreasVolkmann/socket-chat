@@ -3,6 +3,7 @@
 const Message = require('../models/Message');
 const UserController = require('./UserController');
 
+const history = [];
 
 module.exports = function (io, socket) {
 
@@ -11,14 +12,16 @@ module.exports = function (io, socket) {
     sendAuth(user, socket);
     sendUsers(socket);
     broadcastUser(user, socket);
+    sendHistory(socket);
     
 
     socket.on('post message', (message) => {
         console.log(`${socket.id}: ${message}`);
         let msg = new Message({
-            message: message,
+            text: message,
             author: user.name
         });
+        history.push(msg);
         socket.broadcast.emit('message', msg);
     });
 
@@ -50,6 +53,9 @@ function broadcastUser(user, socket) {
     socket.broadcast.emit('user', user);
 }
 
-function sendHistory() {
-    
+function sendHistory(socket) {
+    let start = history.length >= 10 ? 10 : history.length;
+    let recent = history.slice(history.length - start, history.length);
+    console.log(recent);
+    socket.emit('history', recent);
 }

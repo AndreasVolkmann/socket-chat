@@ -19,6 +19,7 @@
     "angular": "^1.5.5",
     "angular-route": "^1.5.5",
     "bootstrap": "^3.3.6",
-    "socket.io-client": "^1.4.5"
+    "socket.io-client": "^1.4.5",
+    "angular-scroll-glue": "^2.0.6"
   }
 }

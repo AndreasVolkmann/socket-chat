@@ -85,6 +85,15 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
         });
     });
 
+    Socket.on('history', function (history) {
+        history.map((item) => {
+            item.date = item.date.replace(/T/, ' ').replace(/\..+/, '');
+        });
+        $scope.$apply(function () {
+            self.messages = history;
+        });
+    });
+
 
     function updateUser(user) {
         self.users.forEach(function (item) {
@@ -102,7 +111,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, 
                         });
                     }
                     item.name = user.name;
-                    item.ct = user.ct;
+                    item.date = user.date;
                 }
             }
         });
