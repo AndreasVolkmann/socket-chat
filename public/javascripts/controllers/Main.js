@@ -11,16 +11,26 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
     self.name = '';
 
     Socket.emit('auth', $scope.$storage.username);
-    
+
     self.send = function (message) {
         if (message.length > 0) {
-            //self.messages.push(message);
+            console.log('Private: ' + self.private);
             append({
                 text: message,
                 author: 'Me'
             });
             console.log('Sent message: ' + message);
-            Socket.emit('post message', message);
+            if (self.private) {
+                var text = message.slice(self.to.name.length + 1);
+                console.log(text);
+                msg = {
+                    text: text,
+                    to: self.to.id
+                };
+                Socket.emit('private message', msg);
+            } else {
+                Socket.emit('post message', message);
+            }
             self.input = '';
         }
     };
@@ -35,11 +45,44 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
         }
     };
 
+    self.checkInput = function () {
+        if (self.input.startsWith('@')) { // check for username
+            var space = self.input.indexOf(' ', 1);
+            var end = self.input.length;
+            if (space > 0) end = space;
+            var name = self.input.substring(1, end);
+
+            self.users.some(function (user) {
+                if (user.name === name) {
+                    self.to = user;
+                    self.private = true;
+                    console.log(self.private + ' found user: ' + name);
+                    return true;
+                } else {
+                    console.log('TEST');
+                    self.private = false;
+                }
+            });
+        }
+    };
+
     // Socket //
     Socket.on('message', function (message) {
         console.log(message);
+
         $scope.$apply(function () {
             var date = message.date.replace(/T/, ' ').replace(/\..+/, '');
+            append({
+                text: message.text,
+                date: date,
+                author: message.author
+            });
+        });
+    });
+
+    Socket.on('private message', function (message) {
+        $scope.$apply(function () {
+            var date = formatDate(message.date);
             append({
                 text: message.text,
                 date: date,

@@ -30,6 +30,16 @@ module.exports = function (io, socket) {
         socket.broadcast.emit('message', msg);
     });
 
+    socket.on('private message', (message) => {
+        console.log(`Private message to ${message.to}`);
+        let msg = new Message({
+            text: message.text,
+            author: user.name,
+            date: Date.now()
+        });
+        socket.broadcast.to(message.to).emit('private message', msg);
+    });
+
     socket.on('disconnect', () => {
         console.log(`Socket disconnected: ${socket.id}`);
         io.emit('user disconnect', user);
@@ -61,6 +71,5 @@ function broadcastUser(user, socket) {
 function sendHistory(socket) {
     let start = history.length >= 10 ? 10 : history.length;
     let recent = history.slice(history.length - start, history.length);
-    console.log(recent);
     socket.emit('history', recent);
 }

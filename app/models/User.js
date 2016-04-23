@@ -12,6 +12,10 @@ const UserSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    room: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true
