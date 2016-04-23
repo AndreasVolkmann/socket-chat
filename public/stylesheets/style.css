@@ -17,6 +17,15 @@ body {
     font: 13px Helvetica, Arial;
 }
 
+.overflowable {
+    height: 240px;
+    overflow-y: auto;
+    border: 1px solid #000;
+}
+
+.overflowable p {
+    margin: 0;
+}
 
 #messages {
     list-style-type: none;

@@ -5,7 +5,7 @@ const UserController = require('./UserController');
 
 
 module.exports = function (io, socket) {
-    console.log(`Socket connected: ${socket.id}`);
+
 
     let user = UserController.addUser(socket.id);
     sendAuth(user, socket);
@@ -48,4 +48,8 @@ function sendAuth(user, socket) {
 function broadcastUser(user, socket) {
     console.log('Broadcasting user ...');
     socket.broadcast.emit('user', user);
+}
+
+function sendHistory() {
+    
 }

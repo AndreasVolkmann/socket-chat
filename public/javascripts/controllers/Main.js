@@ -1,24 +1,9 @@
-angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', function (Socket, $scope, $timeout) {
+angular.module('app').controller('Main', ['Socket', '$scope', function (Socket, $scope) {
     var self = this;
 
     self.title = 'Socket Chat';
     self.messages = [];
     self.input = '';
-    self.log = {
-        log: '',
-        append: function (message) {
-            var date;
-            var text;
-            if (message.date) {
-                date = message.date;
-                text = message.text;
-            } else {
-                date = getDate();
-                text = message;
-            }
-            this.log += '\n' + date + ' | ' + text;
-        }
-    };
     self.user = {
         name: ''
     };
@@ -27,7 +12,10 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
     self.send = function (message) {
         if (message.length > 0) {
             //self.messages.push(message);
-            self.log.append('Me: ' + message);
+            append({
+                text: message,
+                author: 'Me'
+            });
             console.log('Sent message: ' + message);
             Socket.emit('post message', message);
             self.input = '';
@@ -48,10 +36,10 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
         console.log(message);
         $scope.$apply(function () {
             var date = message.ct.replace(/T/, ' ').replace(/\..+/, '');
-
-            self.log.append({
-                text: message.author + ': ' + message.message,
-                date: date
+            append({
+                text: message.message,
+                date: date,
+                author: message.author
             });
         });
     });
@@ -60,7 +48,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
         console.log('Auth: ' + user);
         $scope.$apply(function () {
             self.user = user;
-            self.log.append('Welcome ' + user.name + '!');
+            append('Welcome ' + user.name + '!');
         });
     });
 
@@ -75,7 +63,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
         console.log(user);
         $scope.$apply(function () {
             self.users.push(user);
-            self.log.append(user.name + ' joined the room');
+            append(user.name + ' joined the room');
         });
     });
 
@@ -93,7 +81,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
                     self.users.splice(index, 1);
                 }
             });
-            self.log.append(removed.name + ' left the room');
+            append(removed.name + ' left the room');
         });
     });
 
@@ -103,15 +91,34 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$timeout', functi
             if (item.id === user.id) {
                 if (item.name !== user.name) {
                     if (user.id === self.user.id) {
-                        self.log.append('You changed your name to: ' + user.name);
+                        append({
+                            text: 'You changed your name to: ' + user.name,
+                            author: ''
+                        });
                     } else {
-                        self.log.append(item.name + ' changed his name to: ' + user.name);
+                        append({
+                            text: item.name + ' changed his name to: ' + user.name,
+                            author: ''
+                        });
                     }
                     item.name = user.name;
                     item.ct = user.ct;
                 }
             }
         });
+    }
+
+    function append(message) {
+        var date = message.date || getDate(),
+            text = message.text || message,
+            author = message.author || '';
+
+        var msg = {
+            date: date,
+            text: text,
+            author: author
+        };
+        self.messages.push(msg);
     }
 
 }]);
