@@ -1,25 +1,24 @@
 'use strict';
 
-const User = require('../models/User');
+import User from '../models/User';
 const users = [];
 let count = 0;
 
 async function addUser(id, username) {
-    let name = await assignName(username);
-    
-    let user = new User({
-        id: id,
+    const name = await assignName(username);
+
+    const user = new User({
+        id  : id,
         name: name
     });
     users.push(user);
-
     return user;
 }
 
 function removeUser(id) {
     users.forEach((user) => {
         if (user.id === id) {
-            let index = users.indexOf(user);
+            const index = users.indexOf(user);
             users.splice(index, 1);
         }
     });
@@ -44,11 +43,11 @@ async function updateUser(update) {
 
 async function assignName(username) {
     if (username) {
-        // check for duplcate
+        // check for duplicate
         await users.forEach((user) => {
             if (user.name === username) {
                 return assignName(username + 1);
-            } 
+            }
         });
         return username;
     } else {
@@ -57,9 +56,9 @@ async function assignName(username) {
 }
 
 
-module.exports = {
-    addUser: addUser,
+export default {
+    addUser   : addUser,
     removeUser: removeUser,
-    getUsers: getUsers,
+    getUsers  : getUsers,
     updateUser: updateUser
 };

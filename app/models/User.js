@@ -1,20 +1,20 @@
 'use strict';
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 
 const UserSchema = new Schema({
-    id: {
-        type: String,
+    id  : {
+        type    : String,
         required: true
     },
     name: {
-        type: String,
+        type    : String,
         required: true
     },
     room: {
-        type: String,
+        type   : String,
         default: ''
     }
 }, {
@@ -22,4 +22,4 @@ const UserSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('User', UserSchema);
+export default mongoose.model('User', UserSchema);
