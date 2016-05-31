@@ -8,7 +8,10 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
     self.user = {
         name: ''
     };
-    self.name = '';
+    self.users = [];
+    self.username = '';
+    self.room = '';
+    self.rooms = ['Main'];
 
     Socket.emit('auth', $scope.$storage.username);
 
@@ -16,7 +19,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
         if (message.length > 0) {
             console.log('Private: ' + self.private);
             append({
-                text: message,
+                text  : message,
                 author: 'Me'
             });
             console.log('Sent message: ' + message);
@@ -25,7 +28,7 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
                 console.log(text);
                 msg = {
                     text: text,
-                    to: self.to.id
+                    to  : self.to.id
                 };
                 Socket.emit('private message', msg);
             } else {
@@ -36,11 +39,11 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
     };
 
     self.changeName = function () {
-        if (self.name.length > 0) {
-            Socket.emit('username', self.name);
-            $scope.$storage.username = self.name;
-            self.user.name = self.name;
-            self.name = '';
+        if (self.username.length > 0) {
+            Socket.emit('username', self.username);
+            $scope.$storage.username = self.username;
+            self.user.username = self.username;
+            self.username = '';
             updateUser(self.user);
         }
     };
@@ -69,95 +72,84 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
     // Socket //
     Socket.on('message', function (message) {
         console.log(message);
-
-        $scope.$apply(function () {
-            var date = message.date.replace(/T/, ' ').replace(/\..+/, '');
-            append({
-                text: message.text,
-                date: date,
-                author: message.author
-            });
+        var date = message.date.replace(/T/, ' ').replace(/\..+/, '');
+        append({
+            text  : message.text,
+            date  : date,
+            author: message.author
         });
     });
 
     Socket.on('private message', function (message) {
-        $scope.$apply(function () {
-            var date = formatDate(message.date);
-            append({
-                text: message.text,
-                date: date,
-                author: message.author
-            });
+        var date = formatDate(message.date);
+        append({
+            text  : message.text,
+            date  : date,
+            author: message.author
         });
     });
 
     Socket.on('auth', function (user) {
         console.log('Auth: ' + user);
-        $scope.$apply(function () {
-            self.user = user;
-            //$scope.$storage.username = user.name;
-            append('Welcome ' + user.name + '!');
-        });
+        self.user = user;
+        //$scope.$storage.username = user.name;
+        append('Welcome ' + user.username + '!');
     });
 
     Socket.on('users', function (users) {
         console.log('Got users! ' + users.length);
-        $scope.$apply(function () {
-            self.users = users;
-        });
+        self.users = users;
     });
 
     Socket.on('user', function (user) {
         console.log(user);
-        $scope.$apply(function () {
-            self.users.push(user);
-            append(user.name + ' joined the room');
-        });
+        self.users.push(user);
+        append(user.username + ' joined the room');
     });
 
     Socket.on('user update', function (user) {
-        $scope.$apply(function () {
-            updateUser(user);
-        });
+        updateUser(user);
     });
 
     Socket.on('user disconnect', function (removed) {
-        $scope.$apply(function () {
-            self.users.forEach(function (user) {
-                if (user.id === removed.id) {
-                    var index = self.users.indexOf(user);
-                    self.users.splice(index, 1);
-                }
-            });
-            append(removed.name + ' left the room');
+        self.users.forEach(function (user) {
+            if (user.username === removed.username) {
+                var index = self.users.indexOf(user);
+                self.users.splice(index, 1);
+            }
         });
+        append(removed.name + ' left the room');
     });
 
     Socket.on('history', function (history) {
         history.map((item) => {
             item.date = item.date.replace(/T/, ' ').replace(/\..+/, '');
         });
-        $scope.$apply(function () {
-            self.messages = history;
-            append('Welcome to ' + self.title + '!');
-        });
+
+        self.messages = history;
+        append('Welcome to ' + self.title + '!');
+    });
+
+    Socket.on('rooms', function (rooms) {
+        console.log(rooms);
+        self.rooms = rooms;
     });
 
 
     function updateUser(user) {
         self.users.forEach(function (item) {
             if (item.id === user.id) {
-                if (item.name !== user.name) {
+                if (item.username !== user.username) {
                     if (user.id === self.user.id) {
                         append({
-                            text: 'You changed your name to: ' + user.name
+                            text: 'You changed your name to: ' + user.username
                         });
                     } else {
                         append({
-                            text: item.name + ' changed his name to: ' + user.name
+                            text: item.username + ' changed his name to: ' + user.username
                         });
                     }
-                    item.name = user.name;
+                    item.username = user.username;
                     item.date = user.date;
                 }
             }
@@ -170,8 +162,8 @@ angular.module('app').controller('Main', ['Socket', '$scope', '$localStorage', f
             author = message.author || '';
 
         var msg = {
-            date: date,
-            text: text,
+            date  : date,
+            text  : text,
             author: author
         };
         self.messages.push(msg);

@@ -33,7 +33,7 @@ async function updateUser(update) {
     return new Promise((resolve, reject) => {
         users.forEach((user) => {
             if (user.id === update.id) {
-                user.name = update.name;
+                user.name = assignName(update.name);
                 user.ct = Date.now();
                 resolve(user);
             }

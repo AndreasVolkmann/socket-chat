@@ -1,5 +1,28 @@
 <div>
-    <div class="col-lg-8">
+    <!-- Rooms -->
+    <div class="col-lg-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Rooms</h4>
+            </div>
+            <div class="panel-body">
+                <form>
+                    <div class="list-group">
+                        <button type="button" class="list-group-item" ng-repeat="room in ctrl.rooms">{{room.room}} <span class="badge">{{room.length}}</span></button>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="">Join</button>
+                        </span>
+                        <input class="form-control" ng-model="ctrl.room" id="channel"
+                               autocomplete="off" ng-trim="true"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Chat -->
+    <div class="col-lg-6">
         <div scroll-glue class="overflowable">
             <p ng-class="{}" ng-repeat="message in ctrl.messages track by $index">
                 <span style="color: #777777;">{{message.date}}</span>
@@ -13,16 +36,18 @@
         <form>
             <div class="input-group">
             <span class="input-group-btn">
-            <button class="btn btn-default" ng-click="ctrl.send(ctrl.input)" >Send</button>
+            <button class="btn btn-default" ng-click="ctrl.send(ctrl.input)">Send</button>
             </span>
-                <input ng-change="ctrl.checkInput()" class="form-control" ng-model="ctrl.input" id="m" autocomplete="off" ng-trim="false" />
+                <input ng-change="ctrl.checkInput()" class="form-control" ng-model="ctrl.input" id="m"
+                       autocomplete="off" ng-trim="false"/>
             </div>
         </form>
     </div>
-    <div class="col-lg-4">
+    <!-- User -->
+    <div class="col-lg-3">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Username: {{ctrl.user.name}}</h4>
+                <h4>Username: {{ctrl.user.username}}</h4>
             </div>
             <div class="panel-body">
                 <form>
@@ -30,7 +55,7 @@
                     <span class="input-group-btn">
                         <button ng-click="ctrl.changeName()" class="btn btn-default">Change Username</button>
                     </span>
-                        <input ng-model="ctrl.name" class="form-control" type="text"/>
+                        <input ng-model="ctrl.username" class="form-control" type="text"/>
                     </div>
                 </form>
 
@@ -38,7 +63,7 @@
                 <!-- Users -->
                 <h4>Online</h4>
                 <ul>
-                    <li ng-repeat="user in ctrl.users">{{user.name}}</li>
+                    <li ng-repeat="user in ctrl.users">{{user.username}}</li>
                 </ul>
             </div>
 
