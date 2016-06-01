@@ -55,14 +55,13 @@ module.exports = async function (io, socket) {
         socket.broadcast.emit('user update', getUser());
     });
 
-    socket.on('room:join', async (room) => {
-        // join room
-
+    socket.on('room:join', async(room) => {
+        leaveRoom();
+        console.log(`Joining room ${room}`);
         socket.join(room);
+        console.log(socket.rooms);
         sendRooms();
     });
-
-
 
 
     function sendUsers() {
@@ -82,6 +81,18 @@ module.exports = async function (io, socket) {
         socket.broadcast.emit('user', getUser());
     }
 
+    function leaveRoom() {
+        console.log('Leaving room');
+        const rooms = socket.rooms;
+        for (const room in rooms) {
+            if (room !== socket.id) {
+                console.log(`Leaving: ${room}`);
+                socket.leave(room);
+            }
+        }
+    }
+
+
     async function sendRooms() {
         console.log('Sending rooms ...');
         const ROOMS = io.sockets.adapter.rooms;
@@ -91,7 +102,6 @@ module.exports = async function (io, socket) {
                 length: ROOMS[name].length
             }
         });
-        let count = 0;
         for (let index in MAP) {
             let room = MAP[index];
             console.log(room);
@@ -100,19 +110,11 @@ module.exports = async function (io, socket) {
                 if (room.room == client.id) {
                     console.log('Should be sliced');
                     MAP.splice(index, 1);
-                    count++;
-                    //return true;
                 } else if (room.room.startsWith('/#')) {
                     MAP.splice(index, 1);
-                    count++;
-                    //return true;
                 }
             });
         }
-        //MAP.push({
-        //    room  : 'Main',
-        //    length: count
-        //});
         io.emit('rooms', MAP);
     }
 
