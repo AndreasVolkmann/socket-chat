@@ -15,6 +15,7 @@
 
     <!-- Controllers -->
     <script src="javascripts/controllers/Main.js"></script>
+    <script src="javascripts/controllers/Chat.js"></script>
 
     <!-- Factories -->
     <script src="javascripts/factories/Socket.js"></script>
@@ -30,9 +31,63 @@
         <h2>{{ctrl.title}}</h2>
 
     </div>
-    <ng-view>
+    <div>
+        <!-- Rooms -->
+        <div class="col-lg-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Rooms</h4>
+                </div>
+                <div class="panel-body">
+                    <form>
+                        <div class="list-group">
+                            <button type="button" class="list-group-item" ng-repeat="room in ctrl.rooms">{{room.room}}
+                                <span class="badge">{{room.length}}</span></button>
+                        </div>
+                        <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="ctrl.joinRoom()">Join</button>
+                        </span>
+                            <input class="form-control" ng-model="ctrl.roomText" id="channel"
+                                   autocomplete="off" ng-trim="true"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    </ng-view>
+        <!-- Chat -->
+        <div class="col-lg-6">
+            <ng-view></ng-view>
+        </div>
+
+        <!-- User -->
+        <div class="col-lg-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Username: {{$root.user.username}}</h4>
+                </div>
+                <div class="panel-body">
+                    <form>
+                        <div class="input-group">
+                    <span class="input-group-btn">
+                        <button ng-click="ctrl.changeName()" class="btn btn-default">Change Username</button>
+                    </span>
+                            <input ng-model="ctrl.username" class="form-control" type="text"/>
+                        </div>
+                    </form>
+
+
+                    <!-- Users -->
+                    <h4>Online</h4>
+                    <ul>
+                        <li ng-repeat="user in ctrl.users">{{user.username}}</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

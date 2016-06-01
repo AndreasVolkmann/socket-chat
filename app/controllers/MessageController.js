@@ -6,10 +6,8 @@ import UserController from './UserController';
 const history = [];
 
 export default {
-    
-    addMessage : addMessage,
-    getHistory : getHistory
-    
+    addMessage: addMessage,
+    getHistory: getHistory
 }
 
 

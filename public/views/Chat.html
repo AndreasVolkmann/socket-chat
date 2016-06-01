@@ -1,0 +1,26 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>{{ctrl.room}}</h4>
+    </div>
+    <div class="panel-body">
+        <div scroll-glue class="overflowable">
+            <p ng-class="{}" ng-repeat="message in $root.messages track by $index">
+                <span style="color: #777777;">{{message.date}}</span>
+                <span> | </span>
+                <span><a href="">{{message.author}}</a></span>
+                <span ng-if="message.author">: </span>
+                <span>{{message.text}}</span>
+            </p>
+        </div>
+
+        <form>
+            <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="ctrl.send(ctrl.input)">Send</button>
+                        </span>
+                <input ng-change="ctrl.checkInput()" class="form-control" ng-model="ctrl.input" id="m"
+                       autocomplete="off" ng-trim="false"/>
+            </div>
+        </form>
+    </div>
+</div>

@@ -13,11 +13,11 @@ let count = 0;
  */
 module.exports = async function (io, socket) {
 
-    socket.on('auth', async(username) => {
-        console.log('Username: ' + username);
+    socket.on('auth', async(info) => {
+        console.log('Username: ' + info.username);
 
-        socket.username = await assignName(username);
-
+        socket.username = await assignName(info.username);
+        socket.join(info.room || 'Main');
         sendAuth();
         sendUsers();
         broadcastUser();
@@ -27,31 +27,43 @@ module.exports = async function (io, socket) {
         socket.emit('history', HISTORY);
     });
 
-    socket.on('post message', (message) => {
-        console.log(`${socket.id}: ${message}`);
-        const MSG = MessageController.addMessage(message, socket.username);
-        socket.broadcast.emit('message', MSG);
+    socket.on('message:public', (message) => {
+        console.log(`(${message.room}) ${socket.id}: ${message.text}`);
+        const MSG = MessageController.addMessage(message.text, socket.username);
+        //socket.broadcast.emit('message', MSG);
+        socket.broadcast.to(message.room).emit('message', MSG);
     });
 
-    socket.on('private message', (message) => {
+    socket.on('message:private', (message) => {
         console.log(`Private message to ${message.to}`);
-        const msg = new Message({
+        const MSG = new Message({
             text  : message.text,
             author: socket.username,
             date  : Date.now()
         });
-        socket.broadcast.to(message.to).emit('private message', msg);
+        socket.broadcast.to(message.to).emit('private message', MSG);
     });
 
     socket.on('disconnect', () => {
         console.log(`Socket disconnected: ${socket.id}`);
-        io.emit('user disconnect', getUser());
+        io.emit('user disconnect', {id: socket.id, username: socket.username});
+        sendRooms();
     });
 
     socket.on('username', async(username) => {
         updateUser(username);
         socket.broadcast.emit('user update', getUser());
     });
+
+    socket.on('room:join', async (room) => {
+        // join room
+
+        socket.join(room);
+        sendRooms();
+    });
+
+
+
 
     function sendUsers() {
         console.log('Sending users ...');
@@ -82,19 +94,26 @@ module.exports = async function (io, socket) {
         let count = 0;
         for (let index in MAP) {
             let room = MAP[index];
-            getClients().some((client) => {
-                if (room.room === client.id) {
+            console.log(room);
+            getClients().forEach((client) => {
+                console.log(client.id);
+                if (room.room == client.id) {
+                    console.log('Should be sliced');
                     MAP.splice(index, 1);
                     count++;
-                    return true;
+                    //return true;
+                } else if (room.room.startsWith('/#')) {
+                    MAP.splice(index, 1);
+                    count++;
+                    //return true;
                 }
             });
         }
-        MAP.push({
-            room  : 'Main',
-            length: count
-        });
-        socket.emit('rooms', MAP);
+        //MAP.push({
+        //    room  : 'Main',
+        //    length: count
+        //});
+        io.emit('rooms', MAP);
     }
 
     async function assignName(username) {
